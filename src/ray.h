@@ -4,11 +4,13 @@
 #include <glm/glm.hpp>
 
 class Ray
-{
-    glm::vec3 origin;
-    glm::vec3 direction;
-
+{   
+    private:
+        glm::vec3* direction;
+        glm::vec3* origin;
     public:
-        Ray(glm::vec3 origin, glm::vec3 direction);
+        Ray(glm::vec3* origin, glm::vec3* direction);
+        glm::vec3* getRayDirection() { return this->direction; };
+        glm::vec3* getRayOrigin() { return this->origin; };
 };
 #endif

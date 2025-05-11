@@ -17,6 +17,6 @@ class Camera
 
     public:
         Camera(float angle, float distance, float ratio, glm::vec3 eye, glm::vec3 center, glm::vec3 up);
-        Ray GenerateRay(float Xn, float Yn);
+        Ray generateRay(float Xn, float Yn);
 };
 #endif

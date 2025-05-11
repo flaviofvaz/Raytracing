@@ -2,22 +2,31 @@
 #define SHAPE_H
 
 #include <glm/glm.hpp>
+#include "ray.h"
+#include "hit.h"
 
 class Shape
 {
-    Shape();
+    public:
+        virtual ~Shape() = default;
+        virtual bool intersect(Ray* ray, Hit* hit) = 0;
 };
 
 class Sphere : Shape
 {
-    float radius;
     glm::vec3 center;
+    float radius;
+    public:
+        Sphere(glm::vec3 center, float radius);
+        bool intersect(Ray* ray, Hit* hit) override;
 };
 
-class Place : Shape
+class Plane : Shape
 {
-    glm::vec3 position;
+    glm::vec3 point;
     glm::vec3 normal;
+    public:
+        Plane(glm::vec3 point, glm::vec3 normal);
+        bool intersect(Ray* ray, Hit* hit) override;
 };
-
 #endif

@@ -2,11 +2,19 @@
 #define FILM_H
 
 #include <glm/glm.hpp>
+#include <vector> 
 
 class Film
 {
-    glm::vec2 resolution;
-    glm::vec2 pixelSampler(int i, int j);
-    glm::vec3 image;    
+    glm::ivec2 resolution;
+    std::vector<glm::vec3> image; 
+
+public:
+    Film(glm::ivec2 resolution);
+    glm::vec2 pixelSampler(int i, int j); 
+    int getHeight();
+    int getWidth();
+    void setValue(int i, int j, glm::vec3 pixelColor);
 };
+
 #endif

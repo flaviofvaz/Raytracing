@@ -1,5 +1,5 @@
-#include "camera.h"
-#include "ray.h"
+#include "../src/camera.h"
+#include "../src/ray.h"
 
 #define PI 3.14159265359f
 
@@ -19,7 +19,6 @@ int main()
     up = glm::vec3(7.0f, 8.0f, 9.0f);
     
     Camera* cam = new Camera(angle, distance, ratio, eye, center, up);
-
     Ray ray = cam->GenerateRay(Xn, Yn);
     return 0;
 }

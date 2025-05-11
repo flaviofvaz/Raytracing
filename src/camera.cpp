@@ -5,21 +5,21 @@
 
 Camera::Camera(float angle, float distance, float ratio, glm::vec3 eye, glm::vec3 center, glm::vec3 up)
 {
-    angle = angle;
-    distance = distance;
-    ratio = ratio; 
-    eye = eye;
-    center = center;
-    up = up;
+    this->angle = angle;
+    this->distance = distance;
+    this->ratio = ratio; 
+    this->eye = eye;
+    this->center = center;
+    this->up = up;
     viewMatrix = glm::lookAt(eye, center, up);
     inverseViewMatrix = glm::inverse(viewMatrix);
 }
 
-Ray Camera::GenerateRay(float Xn, float Yn)
+Ray Camera::generateRay(float Xn, float Yn)
 {
     float deltaV, deltaU;
-    glm::vec4 p, o, t, zero;
-    glm::vec3 direction;
+    glm::vec4 p, o4, t4, zero;
+    glm::vec3 direction, normalized_direction, o, t;
 
     deltaV = this->distance * std::tan(this->angle / 2.0);
     deltaU = deltaV * this->ratio;
@@ -30,10 +30,14 @@ Ray Camera::GenerateRay(float Xn, float Yn)
     p.w = 1;
 
     zero = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    o = this->inverseViewMatrix * zero;
-    t = this->inverseViewMatrix * p;
+    o4 = this->inverseViewMatrix * zero;
+    t4 = this->inverseViewMatrix * p;
     
-    direction = t - o;
+    o = glm::vec3(o4) / o4.w;
+    t = glm::vec3(t4) / t4.w;
 
-    return Ray(o, glm::normalize(direction));
+    direction = t - o;
+    normalized_direction = glm::normalize(direction);
+
+    return Ray(&o, &normalized_direction);
 }
