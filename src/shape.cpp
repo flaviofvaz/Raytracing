@@ -129,3 +129,75 @@ bool Sphere::intersect(Ray* ray, Hit* hit)
     }
     return true;
 }
+
+Box::Box(glm::vec3 bMin, glm::vec3 bMax)
+{
+    this->bMin = bMin;
+    this->bMax = bMax;
+}
+
+bool Box::intersect(Ray* ray, Hit* hit)
+{
+    glm::vec3* rayOrigin = ray->getRayOrigin();
+    glm::vec3* rayDirection = ray->getRayDirection();
+
+    // Calculate intersection t values for each slab
+    glm::vec3 t0s = (this->bMin - *rayOrigin) / *rayDirection;
+    glm::vec3 t1s = (this->bMax - *rayOrigin) / *rayDirection;
+
+    glm::vec3 t_near_axis = glm::min(t0s, t1s);
+    glm::vec3 t_far_axis = glm::max(t0s, t1s);
+
+     // The overall t_enter is the maximum of the near t's for each axis
+    float t_enter = glm::max(glm::max(t_near_axis.x, t_near_axis.y), t_near_axis.z);
+    // The overall t_exit is the minimum of the far t's for each axis
+    float t_exit = glm::min(glm::min(t_far_axis.x, t_far_axis.y), t_far_axis.z);
+
+    // Condition for no intersection:
+    // 1. If entry point is after exit point (ray misses the intersection of slabs)
+    // 2. If the entire box is behind the ray's origin (t_exit < 0)
+    if (t_enter > t_exit || t_exit < EPSILON) 
+    {
+        return false;
+    }
+
+    // Determine the actual intersection distance t_final
+    float t_final = t_enter;
+    bool ray_starts_inside = false;
+
+    if (t_enter < EPSILON) { // Ray origin is inside the box or on its surface
+        t_final = t_exit;    // Use the exit point as the intersection
+        ray_starts_inside = true;
+    }
+
+    // If this intersection is closer than what's already in 'hit'
+    if (t_final < hit->t && t_final > EPSILON) { // Ensure t_final is positive and closer
+        hit->t = t_final;
+        hit->position = *rayOrigin + t_final * (*rayDirection);
+        //hit->object = this; 
+
+        // Calculate the normal at the intersection point
+        glm::vec3 p = hit->position;
+        glm::vec3 normal(0.0f);
+        const float norm_epsilon = 1e-4f; // Tolerance for comparing point to face
+
+        // The normal points outwards. If the ray starts inside, t_final corresponds
+        // to an exit point, and the normal should still be the outward normal of that exit face.
+        if (std::abs(p.x - this->bMin.x) < norm_epsilon) normal = glm::vec3(-1.0f, 0.0f, 0.0f);
+        else if (std::abs(p.x - this->bMax.x) < norm_epsilon) normal = glm::vec3(1.0f, 0.0f, 0.0f);
+        else if (std::abs(p.y - this->bMin.y) < norm_epsilon) normal = glm::vec3(0.0f, -1.0f, 0.0f);
+        else if (std::abs(p.y - this->bMax.y) < norm_epsilon) normal = glm::vec3(0.0f, 1.0f, 0.0f);
+        else if (std::abs(p.z - this->bMin.z) < norm_epsilon) normal = glm::vec3(0.0f, 0.0f, -1.0f);
+        else if (std::abs(p.z - this->bMax.z) < norm_epsilon) normal = glm::vec3(0.0f, 0.0f, 1.0f);
+        // else: In a perfect scenario, one of these should be true.
+        // For robustness if p is slightly off due to float precision, a more complex normal
+        // determination might be needed, but this is standard for AABBs.
+        // You might also determine the normal based on which t_near_axis[i] or t_far_axis[i]
+        // defined t_enter or t_exit, which is more robust for edge cases.
+
+        hit->normal = normal;
+        return true;
+    }
+
+    return false;
+}

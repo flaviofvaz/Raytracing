@@ -21,6 +21,15 @@ class Sphere : Shape
         bool intersect(Ray* ray, Hit* hit) override;
 };
 
+class Box : Shape
+{
+    glm::vec3 bMin;
+    glm::vec3 bMax;
+    public:
+        Box(glm::vec3 bMin, glm::vec3 bMax);
+        bool intersect(Ray* ray, Hit* hit) override;
+};
+
 class Plane : Shape
 {
     glm::vec3 point;

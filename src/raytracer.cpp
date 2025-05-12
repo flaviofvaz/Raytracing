@@ -1,4 +1,5 @@
 #include "raytracer.h"
+#include "glm/glm.hpp"
 
 void RayTracer::render(Film* film, Camera* camera, Scene* scene)
 {
