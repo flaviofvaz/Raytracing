@@ -1,49 +1,42 @@
 #include "scene.h"
 #include "hit.h"
+#include <limits>
+#include "light.h"
 
-Scene::Scene(){}
-
-Hit* Scene::computeIntersection(Ray* ray) 
+std::unique_ptr<Hit> Scene::computeIntersection(const Ray& ray) const
 {
-    Hit* closestHit = nullptr;
-    float min_t = 1024.0f*1024.0f*1024.0f;
+    std::unique_ptr<Hit> closestHit = nullptr;
+    float min_t = std::numeric_limits<float>::infinity();
 
-    for (Instance* instance : this->sceneObjects)
+    for (const auto& instance : sceneObjects)
     {
-        Hit* currentHit = instance->computeIntersection(ray);
-        if (currentHit)
+        auto currentHit = instance->computeIntersection(ray);
+        if (currentHit && currentHit->t < min_t)
         {
             min_t = currentHit->t;
-            if (!closestHit)
-            {
-                closestHit = new Hit();
-            }
-            closestHit = currentHit;
+            closestHit = std::move(currentHit);
         }
     }
     return closestHit;
 }
 
-glm::vec3 Scene::traceRay(Ray* ray)
+glm::vec3 Scene::traceRay(const Ray& ray) const
 {
-    float r;
-    glm::vec3 c;
-    Hit* hit = computeIntersection(ray);
-    if(hit)
+    auto hit = computeIntersection(ray);
+    if (!hit) 
     {
-        if(hit->isLight())
-        {
-            r = hit->t;
-            c = (hit->getLight()->power) / (r * r);
-        }
-        else
-        {
-            c = hit->getMaterial()->eval(this, hit, ray->getRayOrigin());
-        }
-        return c;
+        return getAmbientLight();
     }
-    else
+
+    if (hit->isLight()) 
     {
-        return glm::vec3(0.0f, 0.0f, 0.0f);
+        const Light* light = hit->getLight();
+        glm::vec3 color = light->getPower();
+        return color;
+    } 
+    else 
+    {
+        glm::vec3 materialColor = hit->getMaterial()->eval(this, hit.get(), ray.getRayOrigin());
+        return materialColor;
     }
 }

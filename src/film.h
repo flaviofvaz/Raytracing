@@ -3,18 +3,22 @@
 
 #include <glm/glm.hpp>
 #include <vector> 
+#include <string>
 
 class Film
 {
-    glm::ivec2 resolution;
-    std::vector<glm::vec3> image; 
+    private:
+        glm::ivec2 resolution;
+        std::vector<glm::vec3> image;
 
-public:
-    Film(glm::ivec2 resolution);
-    glm::vec2 pixelSampler(int i, int j); 
-    int getHeight();
-    int getWidth();
-    void setValue(int i, int j, glm::vec3 pixelColor);
+    public:
+        Film(glm::ivec2 resolution);
+        glm::vec2 pixelSampler(int i, int j);
+        int getHeight() const;
+        int getWidth() const;
+        void setValue(int i, int j, glm::vec3 pixelColor);
+        glm::vec3 getValue(int i, int j) const;
+        bool savePPM(const std::string& filename) const;
 };
 
 #endif

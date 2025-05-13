@@ -3,16 +3,21 @@
 
 void RayTracer::render(Film* film, Camera* camera, Scene* scene)
 {
-    glm::vec2 sampledPixel;
-    glm::vec3 c;
-    for(int i = 0; i < film->getWidth(); i++)
+    for(int j = 0; j < film->getHeight(); j++)
     {
-        for(int j = 0; j < film->getHeight(); j++)
+        for(int i = 0; i < film->getWidth(); i++)
         {
-            sampledPixel = film->pixelSampler(i, j);
+            // Sample pixel position
+            glm::vec2 sampledPixel = film->pixelSampler(i, j);
+            
+            // Generate ray for this pixel
             Ray ray = camera->generateRay(sampledPixel.x, sampledPixel.y);
-            c = scene->traceRay(&ray);
-            film->setValue(i, j, c);
+            
+            // Trace ray and get color
+            glm::vec3 color = scene->traceRay(ray);
+            
+            // Set pixel color
+            film->setValue(i, j, color);
         }
     }
 }

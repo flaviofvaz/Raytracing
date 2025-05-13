@@ -1,26 +1,40 @@
 #include "material.h"
 #include <glm/glm.hpp>
+#include <cmath>
 #include "scene.h"
 #include "light.h"
 
-glm::vec3* Phong::eval(Scene* scene, Hit* hit, glm::vec3* rayOrigin)
+glm::vec3 Phong::eval(const Scene* scene, const Hit* hit, const glm::vec3& rayOrigin) const
 {
-    glm::vec3 c, v, L, l;
-    glm::vec3* r; 
-    c = glm::vec3(0,0,0);
+    glm::vec3 c = ambient * scene->getAmbientLight();
+    glm::vec3 v = glm::normalize(rayOrigin - hit->position);
 
-    v = glm::normalize(*rayOrigin - hit->position);
-    for (Light* lightSource : scene->lightSources)
+    for (const auto& lightSource : scene->getObjects())
     {
-        l = lightSource->radiance(scene, hit->position, &L);
-        c += *this->diffuse * L * hit->normal * l;
-        r = this->reflect(&-l, &hit->normal);
-        c += *this->glossy * glm::max(0.0f, glm::dot(*r, v));
+        if (lightSource->isLight())
+        {
+            glm::vec3 L;
+            glm::vec3 l = lightSource->getLight()->radiance(scene, hit->position, &L);
+            
+            //if (glm::length(L) > 0.0f)  // Only process if light is visible
+            //{
+                // Diffuse component
+                float diffuseFactor = glm::max(0.0f, glm::dot(hit->normal, l));
+                c += diffuse * L * diffuseFactor;
+            
+                // Specular component
+                glm::vec3 r = reflect(-l, hit->normal);
+                float glossyFactor = glm::max(0.0f, glm::dot(r, v));
+                //color += glossy * L * std::pow(glossyFactor, shininess);
+                c += glossy * std::pow(glossyFactor, shininess);
+            //}
+        }
     }
-    return &c;
+    
+    return glm::clamp(c, 0.0f, 1.0f);
 }
 
-glm::vec3* Phong::reflect(glm::vec3* l, glm::vec3* normal)
+glm::vec3 Phong::reflect(const glm::vec3& incident, const glm::vec3& normal) const
 {
-    return &(2.0f * glm::dot(*normal, *l) * *normal - *l); 
+    return 2.0f * glm::dot(normal, incident) * normal - incident;
 }

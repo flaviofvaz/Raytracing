@@ -1,27 +1,34 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include<glm/glm.hpp>
-#include "scene.h"
-#include "hit.h"
+#include <glm/glm.hpp>
+
+// Forward declarations
+class Scene;
+class Hit;
 
 class Material
 {
     public:
-        Material() {};
-        glm::vec3 eval(Scene* scene, Hit* hit, glm::vec3* rayOrigin);
+        Material() = default;
+        virtual ~Material() = default;
+        virtual glm::vec3 eval(const Scene* scene, const Hit* hit, const glm::vec3& rayOrigin) const = 0;
 };
 
-class Phong : Material
+class Phong : public Material
 {
+    private:
+        glm::vec3 diffuse;
+        glm::vec3 glossy;
+        glm::vec3 ambient;
+        float shininess;
+
     public:
-        Phong(glm::vec3* diffuse, glm::vec3* glossy, glm::vec3* ambient, glm::vec3* shininess)
-            : diffuse(diffuse), glossy(glossy), ambient(ambient), shininess(shininess) {};
-        glm::vec3* diffuse;
-        glm::vec3* glossy;
-        glm::vec3* ambient;
-        glm::vec3* shininess;
-        glm::vec3* eval(Scene* scene, Hit* hit, glm::vec3* rayOrigin);
-        glm::vec3* reflect(glm::vec3* l, glm::vec3* normal);
+        Phong(const glm::vec3& diffuse, const glm::vec3& glossy, 
+              const glm::vec3& ambient, float shininess)
+            : diffuse(diffuse), glossy(glossy), ambient(ambient), shininess(shininess) {}
+        
+        glm::vec3 eval(const Scene* scene, const Hit* hit, const glm::vec3& rayOrigin) const override;
+        glm::vec3 reflect(const glm::vec3& l, const glm::vec3& normal) const;
 };
 #endif

@@ -6,46 +6,41 @@
 #include "shape.h"
 #include "hit.h"
 #include "ray.h"
+#include <memory>
 
 class Instance
 {
     private:
-        enum class InstanceType { LIGHT, MATERIAL };
+        enum class InstanceType { NONE, LIGHT, MATERIAL };
         union 
         {
             Light* light;
             Material* material;
         };
         InstanceType type;
-        Shape* shape;
+        std::unique_ptr<Shape> shape;
+
     public:
-        Instance(Material* m, Shape* shape)
-        {
-            this->material = m;
-            type = InstanceType::MATERIAL;
-            this->shape = shape;
-        };
+        Instance(std::unique_ptr<Shape> shape);
+        ~Instance();
 
-        Instance(Light* l, Shape* shape)
-        {
-            this->light = l;
-            type = InstanceType::LIGHT;
-            this->shape = shape;
-        };
+        // Prevent copying
+        Instance(const Instance&) = delete;
+        Instance& operator=(const Instance&) = delete;
 
-        ~Instance() 
-        {
-            if (type == InstanceType::LIGHT) {
-                light->~Light();
-            } else {
-                material->~Material();
-            }
-            shape->~Shape();
-        }
+        // Allow moving
+        Instance(Instance&& other) noexcept;
+        Instance& operator=(Instance&& other) noexcept;
 
-        bool isLight() {return this->type == InstanceType::LIGHT;};
-        bool isMaterial() {return this->type == InstanceType::MATERIAL;};
+        void setMaterial(Material* material);
+        void setLight(Light* light);
 
-        Hit* computeIntersection(Ray* ray);
+        bool isLight() const { return type == InstanceType::LIGHT; }
+        bool isMaterial() const { return type == InstanceType::MATERIAL; }
+        Light* getLight() const { return type == InstanceType::LIGHT ? light : nullptr; }
+        Material* getMaterial() const { return type == InstanceType::MATERIAL ? material : nullptr; }
+        const Shape* getShape() const { return shape.get(); }
+
+        std::unique_ptr<Hit> computeIntersection(const Ray& ray) const;
 };
 #endif

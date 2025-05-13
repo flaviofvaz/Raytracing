@@ -1,31 +1,28 @@
 #include "light.h"
 #include "scene.h"
 #include "ray.h"
+#include <memory>
 
-PointLight::PointLight(glm::vec3 position, glm::vec3 power) 
+PointLight::PointLight(const glm::vec3& position, const glm::vec3& power) 
+    : Light(), position(position), power(power) {}
+
+glm::vec3 PointLight::radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const
 {
-    this->position = position;
-    this->power = power;
-}
-
-glm::vec3 PointLight::radiance(Scene* scene, glm::vec3 point, glm::vec3* L)
-{
-    glm::vec3 l;
-    Hit* hitScene;
-    float distance;
-
-    l = glm::normalize(this->position - point);
-    Ray* ray = new Ray(&point, &l);
-    hitScene = scene->computeIntersection(ray);
-    if(hitScene->isLight())
-    {
-        distance = glm::distance(point, hitScene->position);
-        *L = this->position / (distance * distance);
+    glm::vec3 l = glm::normalize(position - point);
+    float r = glm::distance(point, position);
+    
+    // Check if light is visible (not blocked by any object)
+    Ray shadowRay(point, l);
+    auto hit = scene->computeIntersection(shadowRay);
+    
+    // If there's a hit and it's not the light itself, or if the hit is closer than the light
+    if (hit && (!hit->isLight() || hit->t < r - 0.001f)) {
+        *L = glm::vec3(0.0f);
+        return glm::vec3(0.0f);
     }
-    else
-    {
-        *L = glm::vec3(0.0f, 0.0f, 0.0f);
-        l = glm::vec3(0.0f, 0.0f, 0.0f);
-    }
+    
+    // Light is visible, calculate attenuation
+    float attenuation = 1.0f / (r * r);
+    *L = power * attenuation;
     return l;
 }

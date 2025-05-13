@@ -9,33 +9,36 @@ class Shape
 {
     public:
         virtual ~Shape() = default;
-        virtual bool intersect(Ray* ray, Hit* hit) = 0;
+        virtual bool intersect(const Ray& ray, Hit* hit) const = 0;
 };
 
-class Sphere : Shape
+class Sphere : public Shape
 {
-    glm::vec3 center;
-    float radius;
+    private:
+        glm::vec3 center;
+        float radius;
     public:
-        Sphere(glm::vec3 center, float radius);
-        bool intersect(Ray* ray, Hit* hit) override;
+        Sphere(const glm::vec3& center, float radius);
+        bool intersect(const Ray& ray, Hit* hit) const override;
 };
 
-class Box : Shape
+class Box : public Shape
 {
-    glm::vec3 bMin;
-    glm::vec3 bMax;
+    private:
+        glm::vec3 bMin;
+        glm::vec3 bMax;
     public:
-        Box(glm::vec3 bMin, glm::vec3 bMax);
-        bool intersect(Ray* ray, Hit* hit) override;
+        Box(const glm::vec3& bMin, const glm::vec3& bMax);
+        bool intersect(const Ray& ray, Hit* hit) const override;
 };
 
-class Plane : Shape
+class Plane : public Shape
 {
-    glm::vec3 point;
-    glm::vec3 normal;
+    private:
+        glm::vec3 point;
+        glm::vec3 normal;
     public:
-        Plane(glm::vec3 point, glm::vec3 normal);
-        bool intersect(Ray* ray, Hit* hit) override;
+        Plane(const glm::vec3& point, const glm::vec3& normal);
+        bool intersect(const Ray& ray, Hit* hit) const override;
 };
 #endif

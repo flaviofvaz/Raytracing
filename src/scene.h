@@ -5,16 +5,35 @@
 #include "hit.h"
 #include "light.h"
 #include "instance.h"
+#include <memory>
+#include <vector>
 
 class Scene
 {
+    private:
+        std::vector<std::unique_ptr<Instance>> sceneObjects;
+        glm::vec3 ambientLight;
     public:
-        Scene();
-        Hit* computeIntersection(Ray* ray);
-        glm::vec3 traceRay(Ray* ray);
-        std::vector<Light*> lightSources;
-        std::vector<Instance*> sceneObjects;
-        void addLight(Light* lightSource) {this->lightSources.push_back(lightSource);};
-        void addObjects(Instance* sceneObject) {this->sceneObjects.push_back(sceneObject);};
+        Scene() = default;
+        ~Scene() = default;
+
+        // Prevent copying
+        Scene(const Scene&) = delete;
+        Scene& operator=(const Scene&) = delete;
+
+        // Allow moving
+        Scene(Scene&&) = default;
+        Scene& operator=(Scene&&) = default;
+
+        std::unique_ptr<Hit> computeIntersection(const Ray& ray) const;
+        glm::vec3 traceRay(const Ray& ray) const;
+
+        void addObject(std::unique_ptr<Instance> sceneObject) {
+            sceneObjects.push_back(std::move(sceneObject));
+        }
+
+        const std::vector<std::unique_ptr<Instance>>& getObjects() const { return sceneObjects; }
+        const glm::vec3& getAmbientLight() const { return ambientLight; }
+        void setAmbientLight(const glm::vec3& light) { ambientLight = light; }
 };
 #endif

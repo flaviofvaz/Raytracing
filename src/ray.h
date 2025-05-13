@@ -6,11 +6,11 @@
 class Ray
 {   
     private:
-        glm::vec3* direction;
-        glm::vec3* origin;
+        glm::vec3 direction;
+        glm::vec3 origin;
     public:
-        Ray(glm::vec3* origin, glm::vec3* direction);
-        glm::vec3* getRayDirection() { return this->direction; };
-        glm::vec3* getRayOrigin() { return this->origin; };
+        Ray(const glm::vec3& origin, const glm::vec3& direction);
+        const glm::vec3& getRayDirection() const { return direction; }
+        const glm::vec3& getRayOrigin() const { return origin; }
 };
 #endif
