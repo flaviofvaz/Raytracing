@@ -34,7 +34,7 @@ int main() {
             glm::vec3(0.8f, 0.0f, 0.0f),  // diffuse
             glm::vec3(0.5f, 0.5f, 0.5f),  // glossy
             glm::vec3(0.2f, 0.2f, 0.2f),  // ambient
-            1.0f                         // shininess
+            10.0f                         // shininess
         );
 
         auto whiteMaterial = std::make_unique<Phong>(
@@ -47,7 +47,7 @@ int main() {
         // Add lights to the scene
         auto light1 = std::make_unique<PointLight>(
             glm::vec3(2.775, -1.75, 0.0),     // position
-            glm::vec3(50.0, 50.0, 50.0)    // increased power
+            glm::vec3(50.0, 50.0, 50.0)    // power
         );
 
         // Create shapes
@@ -55,7 +55,7 @@ int main() {
         auto sphere2 = std::make_unique<Sphere>(glm::vec3(2.775, 3.0, 0.0), 1.0);
 
         // Create floor (adjusted dimensions)
-        auto floorBox = std::make_unique<Box>(glm::vec3(1.5, 1.5, 1.5), glm::vec3(3.0, 3.0, 3.0));
+        //auto floorBox = std::make_unique<Box>(glm::vec3(1.5, 1.5, 1.5), glm::vec3(3.0, 3.0, 3.0));
 
         // Create sphere lights
         auto sphereLightInstance = std::make_unique<Instance>(std::move(sphere));
@@ -64,10 +64,10 @@ int main() {
         auto sphereInstance = std::make_unique<Instance>(std::move(sphere2));
         sphereInstance->setMaterial(redMaterial.get());
         
-        auto floorInstance = std::make_unique<Instance>(std::move(floorBox));
-        floorInstance->setMaterial(whiteMaterial.get());
+        //auto floorInstance = std::make_unique<Instance>(std::move(floorBox));
+        //floorInstance->setMaterial(whiteMaterial.get());
 
-        scene->addObject(std::move(floorInstance));
+        //scene->addObject(std::move(floorInstance));
         scene->addObject(std::move(sphereLightInstance));
         scene->addObject(std::move(sphereInstance));
 

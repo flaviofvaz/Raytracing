@@ -31,7 +31,8 @@ glm::vec3 Scene::traceRay(const Ray& ray) const
     if (hit->isLight()) 
     {
         const Light* light = hit->getLight();
-        glm::vec3 color = light->getPower();
+        auto r = hit->t;
+        glm::vec3 color = getAmbientLight() + light->getPower() / (r * r);
         return color;
     } 
     else 
