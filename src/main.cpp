@@ -52,7 +52,7 @@ int main() {
         );
 
         auto whiteMaterial = std::make_unique<Phong>(
-            glm::vec3(0.0f, 0.0f, 0.0f),  // diffuse
+            glm::vec3(0.8f, 0.8f, 0.8f),  // diffuse
             glm::vec3(0.3f, 0.3f, 0.3f),  // glossy
             glm::vec3(0.1f, 0.1f, 0.1f),  // ambient
             32.0f                         // shininess

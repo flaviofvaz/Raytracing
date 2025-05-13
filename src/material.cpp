@@ -25,8 +25,7 @@ glm::vec3 Phong::eval(const Scene* scene, const Hit* hit, const glm::vec3& rayOr
                 // Specular component
                 glm::vec3 r = reflect(-l, hit->normal);
                 float glossyFactor = glm::max(0.0f, glm::dot(r, v));
-                //color += glossy * L * std::pow(glossyFactor, shininess);
-                c += glossy * std::pow(glossyFactor, shininess);
+                c += glossy * L * std::pow(glossyFactor, shininess);
             //}
         }
     }
