@@ -25,4 +25,24 @@ class PointLight : public Light
         glm::vec3 radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const override;
         glm::vec3 getPower() const override { return power; }
 };
+
+class AreaLight : public Light
+{   
+    private:
+        glm::vec3 position;
+        glm::vec3 power;
+        glm::vec3 ei;
+        glm::vec3 ej;
+        glm::vec3 normal;
+        float area;	
+        float nSamples;
+
+    public:
+        AreaLight(const glm::vec3& position, const glm::vec3& power, const glm::vec3& ei, const glm::vec3& ej, float nSamples);
+        glm::vec3 radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const override;
+        glm::vec3 getSample() const;
+        float getSampleCount() const { return nSamples; }
+        float getArea() const { return area; }
+        glm::vec3 getPower() const override { return power; }
+};
 #endif 

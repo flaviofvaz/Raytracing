@@ -9,6 +9,6 @@ class RayTracer
 {
     public:
         RayTracer() {};
-        void render(Film* Film, Camera* camera, Scene* scene);
+        void render(Film* Film, Camera* camera, Scene* scene, float numSamples);
 };
 #endif

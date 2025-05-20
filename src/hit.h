@@ -2,7 +2,6 @@
 #define HIT_H
 
 #include <glm/glm.hpp>
-#include <memory>
 #include "light.h"
 #include "material.h"
 

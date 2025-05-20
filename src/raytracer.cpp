@@ -1,23 +1,26 @@
 #include "raytracer.h"
 #include "glm/glm.hpp"
 
-void RayTracer::render(Film* film, Camera* camera, Scene* scene)
+void RayTracer::render(Film* film, Camera* camera, Scene* scene, float numSamples)
 {
     for(int j = 0; j < film->getHeight(); j++)
     {
         for(int i = 0; i < film->getWidth(); i++)
         {
-            // Sample pixel position
-            glm::vec2 sampledPixel = film->pixelSampler(i, j);
+            glm::vec3 color(0.0f);
+            for(int s = 0; s < numSamples; s++)
+            {
+                // Sample pixel position
+                glm::vec2 sampledPixel = film->pixelSampler(i, j);
+                
+                // Generate ray for this pixel
+                Ray ray = camera->generateRay(sampledPixel.x, sampledPixel.y);
             
-            // Generate ray for this pixel
-            Ray ray = camera->generateRay(sampledPixel.x, sampledPixel.y);
-            
-            // Trace ray and get color
-            glm::vec3 color = scene->traceRay(ray);
-            
+                // trace ray and get color
+                color += scene->traceRay(ray);
+            }                
             // Set pixel color
-            film->setValue(i, j, color);
+            film->setValue(i, j, color / numSamples);
         }
     }
 }

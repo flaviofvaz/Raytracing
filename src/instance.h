@@ -6,6 +6,7 @@
 #include "shape.h"
 #include "hit.h"
 #include "ray.h"
+#include "transform.h"
 #include <memory>
 
 class Instance
@@ -19,6 +20,7 @@ class Instance
         };
         InstanceType type;
         std::unique_ptr<Shape> shape;
+        std::unique_ptr<Transform> transform;
 
     public:
         Instance(std::unique_ptr<Shape> shape);
@@ -40,6 +42,10 @@ class Instance
         Light* getLight() const { return type == InstanceType::LIGHT ? light : nullptr; }
         Material* getMaterial() const { return type == InstanceType::MATERIAL ? material : nullptr; }
         const Shape* getShape() const { return shape.get(); }
+        const Transform* getTransform() const { return transform.get(); }
+        void translate(const glm::vec3& translation);
+        void scale(const glm::vec3& scale);
+        void rotate(float angle, const glm::vec3& axis);    
 
         std::unique_ptr<Hit> computeIntersection(const Ray& ray) const;
 };

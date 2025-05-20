@@ -1,6 +1,5 @@
 #include "scene.h"
 #include "hit.h"
-#include <limits>
 #include "light.h"
 
 std::unique_ptr<Hit> Scene::computeIntersection(const Ray& ray) const
@@ -25,7 +24,7 @@ glm::vec3 Scene::traceRay(const Ray& ray) const
     auto hit = computeIntersection(ray);
     if (!hit) 
     {
-        return getAmbientLight();
+        return glm::vec3(0.0f, 0.0f, 0.0f);
     }
 
     if (hit->isLight()) 
@@ -37,7 +36,7 @@ glm::vec3 Scene::traceRay(const Ray& ray) const
     } 
     else 
     {
-        glm::vec3 materialColor = hit->getMaterial()->eval(this, hit.get(), ray.getRayOrigin());
+        glm::vec3 materialColor = hit->getMaterial()->Eval(this, hit.get(), ray.getRayOrigin());
         return materialColor;
     }
 }

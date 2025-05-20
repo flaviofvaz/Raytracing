@@ -31,14 +31,4 @@ class Box : public Shape
         Box(const glm::vec3& bMin, const glm::vec3& bMax);
         bool intersect(const Ray& ray, Hit* hit) const override;
 };
-
-class Plane : public Shape
-{
-    private:
-        glm::vec3 point;
-        glm::vec3 normal;
-    public:
-        Plane(const glm::vec3& point, const glm::vec3& normal);
-        bool intersect(const Ray& ray, Hit* hit) const override;
-};
 #endif

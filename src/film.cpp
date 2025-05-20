@@ -9,11 +9,16 @@ Film::Film(glm::ivec2 resolution)
 {
 }
 
+inline float Random()
+{
+    return static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+}
+
 glm::vec2 Film::pixelSampler(int i, int j)
 {
     // Convert pixel coordinates to normalized device coordinates (0 to 1)
-    float x = static_cast<float>(i + 0.5f) / resolution.x;
-    float y = static_cast<float>(j + 0.5f) / resolution.y;
+    float x = static_cast<float>(i + Random()) / resolution.x;
+    float y = static_cast<float>(j + Random()) / resolution.y;
     return glm::vec2(x, y);
 }
 
@@ -30,11 +35,6 @@ int Film::getWidth() const
 void Film::setValue(int i, int j, glm::vec3 pixelColor)
 {
     int index = j * resolution.x + i;
-    // Debug output for color values
-    if (i % 100 == 0 && j % 100 == 0) {  // Only print every 100th pixel to avoid spam
-        std::cout << "Setting pixel (" << i << "," << j << ") to color ("
-                  << pixelColor.x << "," << pixelColor.y << "," << pixelColor.z << ")" << std::endl;
-    }
     image[index] = pixelColor;
 }
 
