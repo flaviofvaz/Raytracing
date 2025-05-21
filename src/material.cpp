@@ -24,7 +24,7 @@ glm::vec3 PhongMaterial::Eval(const Scene* scene, const Hit* hit, const glm::vec
                 // Glossy component
                 glm::vec3 r = reflect(-l, hit->normal);
                 float glossyFactor = glm::max(0.0f, glm::dot(r, v));
-                c += glossy * std::pow(glossyFactor, shininess);
+                c += glossy * L * std::pow(glossyFactor, shininess);
             }
         }
     }

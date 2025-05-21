@@ -17,7 +17,7 @@ int main()
         // create film
         const int width = 800;
         const int height = 600;
-        const int numSamples = 4;
+        const int numSamples = 25;
         auto film = std::make_unique<Film>(glm::ivec2(width, height));
 
         // create camera
