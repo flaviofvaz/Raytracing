@@ -12,6 +12,7 @@ class Light
         virtual ~Light() = default;
         virtual glm::vec3 radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const = 0;
         virtual glm::vec3 getPower() const = 0;
+        virtual int getSampleCount() const = 0;
 };
 
 class PointLight : public Light
@@ -24,6 +25,7 @@ class PointLight : public Light
         PointLight(const glm::vec3& position, const glm::vec3& power);
         glm::vec3 radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const override;
         glm::vec3 getPower() const override { return power; }
+        int getSampleCount() const override{ return 1; }
 };
 
 class AreaLight : public Light
@@ -35,13 +37,13 @@ class AreaLight : public Light
         glm::vec3 ej;
         glm::vec3 normal;
         float area;	
-        float nSamples;
+        int nSamples;
 
     public:
-        AreaLight(const glm::vec3& position, const glm::vec3& power, const glm::vec3& ei, const glm::vec3& ej, float nSamples);
+        AreaLight(const glm::vec3& position, const glm::vec3& power, const glm::vec3& ei, const glm::vec3& ej, int nSamples);
         glm::vec3 radiance(const Scene* scene, const glm::vec3& point, glm::vec3* L) const override;
         glm::vec3 getSample() const;
-        float getSampleCount() const { return nSamples; }
+        int getSampleCount() const { return nSamples; }
         float getArea() const { return area; }
         glm::vec3 getPower() const override { return power; }
 };

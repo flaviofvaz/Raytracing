@@ -17,7 +17,7 @@ glm::vec3 PointLight::radiance(const Scene* scene, const glm::vec3& point, glm::
     float r = glm::distance(position, point);
     
     // adding a small epsilon to avoid self-intersection
-    Ray shadowRay(point + 1e-4f, l);
+    Ray shadowRay(point, l);
     auto hit = scene->computeIntersection(shadowRay);
     
     if (hit && hit->isLight() && hit->getLight() == this) 
@@ -31,7 +31,7 @@ glm::vec3 PointLight::radiance(const Scene* scene, const glm::vec3& point, glm::
     }
 }
 
-AreaLight::AreaLight(const glm::vec3& position, const glm::vec3& power, const glm::vec3& ei, const glm::vec3& ej, float nSamples)
+AreaLight::AreaLight(const glm::vec3& position, const glm::vec3& power, const glm::vec3& ei, const glm::vec3& ej, int nSamples)
     : Light(), position(position), power(power), ei(ei), ej(ej), nSamples(nSamples)
     {
         glm::vec3 crossProduct = glm::cross(ei, ej);
@@ -50,15 +50,15 @@ glm::vec3 AreaLight::radiance(const Scene* scene, const glm::vec3& point, glm::v
     
     glm::vec3 l = glm::normalize(s - point);
     
-    Ray shadowRay(point + 1e-4f * l, l);
+    Ray shadowRay(point, l);
     auto hit = scene->computeIntersection(shadowRay);
     if (hit && hit->isLight() && hit->getLight() == this) 
     {
         glm::vec3 dif = point - s;
         float r = glm::dot(dif, dif);
 
-        *L = power * glm::dot(-l, normal) / (r * r);
-        *L *= getArea() / getSampleCount();
+        *L = power * std::max(0.0f, glm::dot(-l, normal)) / r;
+        *L /= static_cast<float>(getSampleCount());
         return l;
     }
     {

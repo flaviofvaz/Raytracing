@@ -56,7 +56,8 @@ int main()
         );
 
         // add lights to the scene
-        // glm::vec3 lightPosition(2.0f, 4.0f, 3.0f);
+
+        glm::vec3 lightPosition(2.0f, 4.0f, 3.0f);
         // auto pointLight = std::make_unique<PointLight>(
         //     lightPosition,                      // position
         //     glm::vec3(100.0f, 100.0f, 100.0f)   // power
@@ -67,13 +68,12 @@ int main()
         // scene->addObject(std::move(lightSphereInstance));
         
         // Add area light
-        glm::vec3 areaLightPosition(0.0f, 4.0f, 0.0f);
         auto areaLight = std::make_unique<AreaLight>(
-            areaLightPosition,                    // position
+            lightPosition,                    // position
             glm::vec3(100.0f, 100.0f, 100.0f),   // power
             glm::vec3(1.0f, 0.0f, 0.0f),         // ei (x-axis)
             glm::vec3(0.0f, 0.0f, 1.0f),         // ej (z-axis)
-            25.0f                                 // number of samples
+            25                                 // number of samples
         );
         
         // Create a thin box to represent the area light
@@ -83,7 +83,7 @@ int main()
         );
         auto areaLightInstance = std::make_unique<Instance>(std::move(areaLightBox));
         areaLightInstance->setLight(areaLight.get());
-        areaLightInstance->translate(areaLightPosition);
+        areaLightInstance->translate(lightPosition);
         scene->addObject(std::move(areaLightInstance));
         
         // add objects to the scene

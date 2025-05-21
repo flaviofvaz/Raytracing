@@ -12,17 +12,20 @@ glm::vec3 PhongMaterial::Eval(const Scene* scene, const Hit* hit, const glm::vec
     {
         if (sceneObject->isLight())
         {
-            glm::vec3 L;
-            glm::vec3 l = sceneObject->getLight()->radiance(scene, hit->position, &L);
+            for (int i = 0; i < sceneObject->getLight()->getSampleCount(); i++)
+            {
+                glm::vec3 L;
+                glm::vec3 l = sceneObject->getLight()->radiance(scene, hit->position, &L);
+                
+                // Diffuse component
+                float diffuseFactor = glm::max(0.0f, glm::dot(hit->normal, l));
+                c += diffuse * L * diffuseFactor;
             
-            // Diffuse component
-            float diffuseFactor = glm::max(0.0f, glm::dot(hit->normal, l));
-            c += diffuse * L * diffuseFactor;
-        
-            // Glossy component
-            glm::vec3 r = reflect(-l, hit->normal);
-            float glossyFactor = glm::max(0.0f, glm::dot(r, v));
-            c += glossy * std::pow(glossyFactor, shininess);
+                // Glossy component
+                glm::vec3 r = reflect(-l, hit->normal);
+                float glossyFactor = glm::max(0.0f, glm::dot(r, v));
+                c += glossy * std::pow(glossyFactor, shininess);
+            }
         }
     }
     
@@ -54,8 +57,7 @@ glm::vec3 PhongMetal::Eval(const Scene* scene, const Hit* hit, const glm::vec3& 
     glm::vec3 r = glm::normalize(PhongMaterial::reflect(-v, n));
     
     depth++;
-    // Add small offset to prevent self-intersection
-    Ray ray(p + n * 0.001f, r);
+    Ray ray(p, r);
     
     // Trace reflected ray
     c += R * scene->traceRay(ray);
